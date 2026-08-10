@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import { Camera, CheckCircle2, Mail, Pencil, Check, X } from "lucide-react";
 import { useAuthStore } from "../store/authStore";
 import * as authApi from "../api/auth";
+import { updateProfile, uploadAvatar } from "../api/user";
 import { Card } from "../components/ui/Card";
 import { Avatar } from "../components/ui/Avatar";
 import { Badge } from "../components/ui/Badge";
@@ -19,6 +20,7 @@ export function ProfilePage() {
   const [savingName, setSavingName] = useState(false);
   const [resending, setResending] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState(null);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -34,23 +36,35 @@ export function ProfilePage() {
       return;
     }
     setSavingName(true);
-    // TODO(M6): replace with `await updateProfile({ name: nameDraft })` once
-    // PATCH /user/profile exists - persists to the account, not just this session.
-    await new Promise((r) => setTimeout(r, 400));
-    updateUser({ name: nameDraft.trim() });
-    setSavingName(false);
-    setEditingName(false);
-    toast.success("Name updated");
+    try {
+      const profile = await updateProfile({ name: nameDraft.trim() });
+      updateUser(profile);
+      setEditingName(false);
+      toast.success("Name updated");
+    } catch (err) {
+      toast.error(err.message);
+    } finally {
+      setSavingName(false);
+    }
   }
 
-  function handleAvatarSelect(e) {
+  async function handleAvatarSelect(e) {
     const file = e.target.files?.[0];
     if (!file) return;
-    // TODO(M6): upload via api/user.js's uploadAvatar(file) once
-    // PATCH /user/profile/avatar (Cloudinary) exists - this only previews locally for now.
-    const url = URL.createObjectURL(file);
-    setAvatarPreview(url);
-    toast.success("Looking good! (Preview only until avatar upload ships)");
+
+    const previewUrl = URL.createObjectURL(file);
+    setAvatarPreview(previewUrl);
+    setUploadingAvatar(true);
+    try {
+      const profile = await uploadAvatar(file);
+      updateUser(profile);
+      toast.success("Avatar updated");
+    } catch (err) {
+      setAvatarPreview(null);
+      toast.error(err.message);
+    } finally {
+      setUploadingAvatar(false);
+    }
   }
 
   async function handleResendVerification() {
@@ -85,10 +99,11 @@ export function ProfilePage() {
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
+            disabled={uploadingAvatar}
             aria-label="Change avatar"
-            className="absolute -bottom-1 -right-1 flex size-8 items-center justify-center rounded-full border-2 border-white bg-brand-600 text-white hover:bg-brand-700"
+            className="absolute -bottom-1 -right-1 flex size-8 items-center justify-center rounded-full border-2 border-white bg-brand-600 text-white hover:bg-brand-700 disabled:opacity-60"
           >
-            <Camera className="size-4" />
+            {uploadingAvatar ? <Spinner size={16} /> : <Camera className="size-4" />}
           </button>
           <input
             ref={fileInputRef}

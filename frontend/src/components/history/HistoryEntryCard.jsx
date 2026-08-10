@@ -40,20 +40,26 @@ export function HistoryEntryCard({ entry, onDelete }) {
         </div>
       </div>
 
-      <div className="mt-4 grid gap-2 border-t border-slate-100 pt-4 text-sm text-slate-600 sm:grid-cols-3">
-        <p className="flex items-start gap-2">
-          <UtensilsCrossed className="mt-0.5 size-4 shrink-0 text-orange-500" />
-          {entry.recommendation.food}
+      {entry.recommendation ? (
+        <div className="mt-4 grid gap-2 border-t border-slate-100 pt-4 text-sm text-slate-600 sm:grid-cols-3">
+          <p className="flex items-start gap-2">
+            <UtensilsCrossed className="mt-0.5 size-4 shrink-0 text-orange-500" />
+            {entry.recommendation.food}
+          </p>
+          <p className="flex items-start gap-2">
+            <Tv className="mt-0.5 size-4 shrink-0 text-violet-500" />
+            {entry.recommendation.watch}
+          </p>
+          <p className="flex items-start gap-2">
+            <Activity className="mt-0.5 size-4 shrink-0 text-emerald-500" />
+            {entry.recommendation.activity}
+          </p>
+        </div>
+      ) : (
+        <p className="mt-4 border-t border-slate-100 pt-4 text-sm text-slate-500">
+          No suggestions for this check-in.
         </p>
-        <p className="flex items-start gap-2">
-          <Tv className="mt-0.5 size-4 shrink-0 text-violet-500" />
-          {entry.recommendation.watch}
-        </p>
-        <p className="flex items-start gap-2">
-          <Activity className="mt-0.5 size-4 shrink-0 text-emerald-500" />
-          {entry.recommendation.activity}
-        </p>
-      </div>
+      )}
     </div>
   );
 }

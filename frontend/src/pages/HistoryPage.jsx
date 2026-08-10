@@ -1,25 +1,66 @@
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { CalendarCheck, TrendingUp, Sparkles } from "lucide-react";
-import { getSampleHistory, getSampleStats } from "../lib/sampleHistory";
+import { getHistory, getStats, deleteHistoryEntry } from "../api/mood";
 import { moodLabel } from "../lib/moodOptions";
 import { StatCard } from "../components/history/StatCard";
 import { MoodFrequencyBars } from "../components/history/MoodFrequencyBars";
 import { HistoryEntryCard } from "../components/history/HistoryEntryCard";
 import { Pagination } from "../components/ui/Pagination";
+import { Spinner } from "../components/ui/Spinner";
 
 const PAGE_SIZE = 4;
 
-export function HistoryPage() {
-  // TODO(M5): replace with useEffect + api/mood.js's getHistory()/getStats()
-  // once GET /mood/history and GET /mood/stats exist. Shapes already match.
-  const [entries, setEntries] = useState(() => getSampleHistory());
-  const [page, setPage] = useState(1);
-  const stats = useMemo(() => getSampleStats(entries), [entries]);
-  const totalPages = Math.max(1, Math.ceil(entries.length / PAGE_SIZE));
-  const pageEntries = entries.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+function thisWeekCount(weeklyTrend) {
+  if (!weeklyTrend?.length) return 0;
+  const last = weeklyTrend[weeklyTrend.length - 1];
+  const weekStart = new Date(last.week);
+  const msSinceStart = Date.now() - weekStart.getTime();
+  const withinCurrentWeek = msSinceStart >= 0 && msSinceStart < 7 * 24 * 60 * 60 * 1000;
+  return withinCurrentWeek ? last.count : 0;
+}
 
-  function handleDelete(id) {
+export function HistoryPage() {
+  const [entries, setEntries] = useState([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [stats, setStats] = useState({ totalCheckIns: 0, topMood: null, frequency: {} });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    Promise.all([getHistory({ page, limit: PAGE_SIZE }), getStats()])
+      .then(([history, statsData]) => {
+        if (cancelled) return;
+        setEntries(history.items);
+        setTotalPages(history.totalPages);
+        setStats(statsData);
+      })
+      .catch(() => toast.error("Couldn't load your history"))
+      .finally(() => !cancelled && setLoading(false));
+    return () => {
+      cancelled = true;
+    };
+  }, [page]);
+
+  async function handleDelete(id) {
+    const previous = entries;
     setEntries((prev) => prev.filter((e) => e.id !== id));
+    try {
+      await deleteHistoryEntry(id);
+    } catch (err) {
+      setEntries(previous);
+      toast.error(err.message);
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center">
+        <Spinner size={32} />
+      </div>
+    );
   }
 
   return (
@@ -41,7 +82,7 @@ export function HistoryPage() {
           value={stats.topMood ? moodLabel(stats.topMood.mood) : "—"}
           sub={stats.topMood ? `${stats.topMood.count} times` : undefined}
         />
-        <StatCard icon={Sparkles} label="This week" value={`${Math.min(entries.length, 7)}`} />
+        <StatCard icon={Sparkles} label="This week" value={thisWeekCount(stats.weeklyTrend)} />
       </div>
 
       <div className="mb-8">
@@ -55,7 +96,7 @@ export function HistoryPage() {
       ) : (
         <>
           <div className="flex flex-col gap-4">
-            {pageEntries.map((entry) => (
+            {entries.map((entry) => (
               <HistoryEntryCard key={entry.id} entry={entry} onDelete={handleDelete} />
             ))}
           </div>

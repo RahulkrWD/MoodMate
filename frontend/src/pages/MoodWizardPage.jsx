@@ -8,7 +8,8 @@ import {
   DIETARY_PREFS,
   TIME_AVAILABLE,
 } from "../lib/moodOptions";
-import { getSampleRecommendation } from "../lib/sampleRecommendations";
+import toast from "react-hot-toast";
+import { analyzeMood } from "../api/mood";
 import { useAuthStore } from "../store/authStore";
 import { OptionTile } from "../components/mood/OptionTile";
 import { WizardProgress } from "../components/mood/WizardProgress";
@@ -61,11 +62,17 @@ export function MoodWizardPage() {
       return;
     }
     setPhase("loading");
-    // TODO(M4): replace with `await analyzeMood(form)` once POST
-    // /mood/analyze exists - same { food, watch, activity } response shape.
-    await new Promise((r) => setTimeout(r, 900));
-    setResult(getSampleRecommendation(form.mood));
-    setPhase("results");
+    try {
+      const { recommendation, isFallback } = await analyzeMood(form);
+      if (isFallback) {
+        toast("Using a general suggestion - our AI helper is briefly unavailable.");
+      }
+      setResult(recommendation);
+      setPhase("results");
+    } catch (err) {
+      toast.error(err.message);
+      setPhase("wizard");
+    }
   }
 
   const canProceed =

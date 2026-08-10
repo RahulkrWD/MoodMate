@@ -126,15 +126,15 @@ created_at      TIMESTAMPTZ DEFAULT now()
 
 ## 7. Milestones
 
-- [ ] **M0 — Project setup**: NestJS backend scaffold, Vite + Tailwind frontend scaffold, Postgres connection, environment config, folder structure, git repo
-- [ ] **M1 — Database & entities**: TypeORM entities + migrations for `users`, `mood_entries`, `recommendations`
-- [ ] **M2 — Auth module**: signup, login, JWT strategy, email verification (Nodemailer), forgot/reset password
-- [ ] **M3 — Gemini integration**: service wrapper, prompt construction, JSON parsing, retry logic, internal rate limiter
-- [ ] **M4 — Core mood feature**: `/mood/analyze` endpoint, guest + logged-in paths, throttling
-- [ ] **M5 — History & stats**: `/mood/history`, `/mood/stats` with raw SQL/QueryBuilder, pagination, filtering
-- [ ] **M6 — Profile & avatar**: `/user/profile`, Cloudinary upload integration
-- [ ] **M7 — Global error handling**: exception filters, custom exceptions, standardized responses across all endpoints
-- [ ] **M8 — Frontend**: multi-step wizard UI (mood → energy → preferences → result), history dashboard, responsive Tailwind layout, icon library integration
+- [x] **M0 — Project setup**: NestJS backend scaffold, Vite + Tailwind frontend scaffold, Postgres connection, environment config, folder structure, git repo
+- [x] **M1 — Database & entities**: TypeORM entities + migrations for `users`, `mood_entries`, `recommendations`
+- [x] **M2 — Auth module**: signup, login, JWT strategy, email verification (Nodemailer), forgot/reset password
+- [x] **M3 — Gemini integration**: service wrapper, prompt construction, JSON parsing, retry logic, internal rate limiter
+- [x] **M4 — Core mood feature**: `/mood/analyze` endpoint, guest + logged-in paths, throttling
+- [x] **M5 — History & stats**: `/mood/history`, `/mood/stats` with raw SQL/QueryBuilder, pagination, filtering
+- [x] **M6 — Profile & avatar**: `/user/profile`, Cloudinary upload integration
+- [x] **M7 — Global error handling**: exception filters, custom exceptions, standardized responses across all endpoints
+- [x] **M8 — Frontend**: multi-step wizard UI (mood → energy → preferences → result), history dashboard, responsive Tailwind layout, icon library integration
 - [ ] **M9 — Polish & deploy**: manual test pass, deploy backend + frontend, write demo instructions, record a short demo video/gif for the portfolio
 
 ---

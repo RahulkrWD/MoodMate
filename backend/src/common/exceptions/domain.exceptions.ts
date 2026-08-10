@@ -58,3 +58,23 @@ export class GeminiServiceException extends AppException {
     super('GEMINI_SERVICE_ERROR', message, HttpStatus.SERVICE_UNAVAILABLE);
   }
 }
+
+export class AvatarUploadUnavailableException extends AppException {
+  constructor() {
+    super(
+      'AVATAR_UPLOAD_UNAVAILABLE',
+      'Avatar upload is not configured on this server',
+      HttpStatus.SERVICE_UNAVAILABLE,
+    );
+  }
+}
+
+export class AvatarUploadFailedException extends AppException {
+  constructor() {
+    super(
+      'AVATAR_UPLOAD_FAILED',
+      'Failed to upload the avatar image, please try again',
+      HttpStatus.BAD_GATEWAY,
+    );
+  }
+}
