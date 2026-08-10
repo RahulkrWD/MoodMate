@@ -6,6 +6,7 @@ export default registerAs(
   (): TypeOrmModuleOptions => ({
     type: 'postgres',
     url: process.env.DATABASE_URL,
+    entities: [__dirname + '/../modules/**/entities/*.entity{.ts,.js}'],
     autoLoadEntities: true,
     synchronize: false,
     migrationsRun: false,
