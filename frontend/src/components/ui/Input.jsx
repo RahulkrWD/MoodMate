@@ -26,7 +26,7 @@ export const Input = forwardRef(function Input(
           type={resolvedType}
           aria-invalid={!!error}
           className={cn(
-            "h-11 w-full rounded-xl border border-slate-300 bg-white px-4 text-sm text-slate-900 placeholder:text-slate-400",
+            "h-11 w-full rounded-xl border border-brand-200 bg-white px-4 text-sm text-slate-900 placeholder:text-slate-400",
             "outline-none transition-shadow focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15",
             error && "border-red-400 focus:border-red-500 focus:ring-red-500/15",
             isPassword && "pr-11",

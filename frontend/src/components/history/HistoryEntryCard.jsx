@@ -8,7 +8,7 @@ export function HistoryEntryCard({ entry, onDelete }) {
   const Icon = moodMeta?.icon;
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-5">
+    <div className="rounded-2xl border border-brand-100 bg-white p-5 shadow-sm shadow-brand-900/[0.03]">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
           {Icon && (

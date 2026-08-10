@@ -12,7 +12,7 @@ export function WizardProgress({ steps, currentIndex }) {
                 "flex size-8 items-center justify-center rounded-full text-xs font-semibold transition-colors",
                 i < currentIndex && "bg-brand-600 text-white",
                 i === currentIndex && "bg-brand-600 text-white ring-4 ring-brand-100",
-                i > currentIndex && "bg-slate-200 text-slate-500",
+                i > currentIndex && "bg-brand-100 text-brand-400",
               )}
             >
               {i < currentIndex ? <Check className="size-4" /> : i + 1}
@@ -30,7 +30,7 @@ export function WizardProgress({ steps, currentIndex }) {
             <div
               className={cn(
                 "mx-2 h-0.5 flex-1 rounded-full transition-colors",
-                i < currentIndex ? "bg-brand-600" : "bg-slate-200",
+                i < currentIndex ? "bg-brand-600" : "bg-brand-100",
               )}
             />
           )}

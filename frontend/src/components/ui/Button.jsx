@@ -7,8 +7,8 @@ const VARIANTS = {
     "bg-brand-600 text-white hover:bg-brand-700 focus-visible:outline-brand-600 shadow-sm shadow-brand-600/20",
   warm: "bg-warm-500 text-white hover:bg-warm-600 focus-visible:outline-warm-500 shadow-sm shadow-warm-500/20",
   outline:
-    "border border-slate-300 text-slate-700 hover:bg-slate-100 focus-visible:outline-brand-600",
-  ghost: "text-slate-600 hover:bg-slate-100 focus-visible:outline-brand-600",
+    "border border-brand-200 text-slate-700 hover:bg-brand-50 focus-visible:outline-brand-600",
+  ghost: "text-slate-600 hover:bg-brand-50 focus-visible:outline-brand-600",
   danger:
     "bg-red-600 text-white hover:bg-red-700 focus-visible:outline-red-600",
 };

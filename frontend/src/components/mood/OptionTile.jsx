@@ -10,7 +10,7 @@ export function OptionTile({ selected, onClick, icon: Icon, label, className }) 
         "flex flex-col items-center gap-2.5 rounded-2xl border-2 p-4 text-center transition-all",
         selected
           ? "border-brand-500 bg-brand-50 shadow-sm shadow-brand-500/10"
-          : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50",
+          : "border-brand-100 bg-white hover:border-brand-300 hover:bg-brand-50/50",
         className,
       )}
     >
@@ -18,7 +18,7 @@ export function OptionTile({ selected, onClick, icon: Icon, label, className }) 
         <span
           className={cn(
             "flex size-11 items-center justify-center rounded-full",
-            selected ? "bg-brand-600 text-white" : "bg-slate-100 text-slate-500",
+            selected ? "bg-brand-600 text-white" : "bg-brand-50 text-brand-400",
           )}
         >
           <Icon className="size-5" />

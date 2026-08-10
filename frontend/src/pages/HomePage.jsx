@@ -25,7 +25,7 @@ export function HomePage() {
   return (
     <div>
       <section className="relative overflow-hidden">
-        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-brand-50 via-slate-50 to-slate-50" />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-brand-100 via-brand-50/60 to-transparent" />
         <div className="mx-auto max-w-4xl px-4 py-20 text-center sm:px-6 sm:py-28">
           <span className="mb-5 inline-flex items-center gap-1.5 rounded-full border border-brand-200 bg-white px-3 py-1 text-xs font-medium text-brand-700">
             <Sparkles className="size-3.5" /> AI-powered mood check-ins
@@ -105,7 +105,7 @@ export function HomePage() {
         </p>
       </section>
 
-      <section className="border-t border-slate-200 bg-white">
+      <section className="border-t border-brand-100 bg-white">
         <div className="mx-auto flex max-w-3xl flex-col items-center gap-4 px-4 py-14 text-center sm:px-6">
           <h2 className="font-display text-2xl font-semibold text-slate-900">
             Ready to check in with yourself?

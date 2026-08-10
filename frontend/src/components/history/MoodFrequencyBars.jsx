@@ -22,7 +22,7 @@ export function MoodFrequencyBars({ frequency }) {
             <span className="w-24 shrink-0 text-xs font-medium text-slate-600">
               {moodLabel(mood)}
             </span>
-            <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-100">
+            <div className="h-2 flex-1 overflow-hidden rounded-full bg-brand-100">
               <div
                 className="h-full rounded-full bg-brand-500"
                 style={{ width: `${(count / max) * 100}%` }}
