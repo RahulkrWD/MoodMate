@@ -115,9 +115,25 @@ export class MoodService {
     // orderBy needs the entity property path (createdAt), not the raw
     // column name - TypeORM resolves it through entity metadata when
     // combined with skip/take, and fails silently on a raw column name.
+    // .select() restricts the columns actually fetched from Postgres -
+    // leftJoinAndSelect alone would pull every Recommendation column,
+    // including the (potentially large) raw_ai_response JSONB blob, even
+    // though the mapped response below only ever uses three of them.
     const qb = this.moodEntryRepository
       .createQueryBuilder('entry')
-      .leftJoinAndSelect('entry.recommendation', 'recommendation')
+      .leftJoin('entry.recommendation', 'recommendation')
+      .select([
+        'entry.id',
+        'entry.mood',
+        'entry.energyLevel',
+        'entry.dietaryPref',
+        'entry.timeAvailable',
+        'entry.isSerious',
+        'entry.createdAt',
+        'recommendation.foodSuggestion',
+        'recommendation.watchSuggestion',
+        'recommendation.activitySuggestion',
+      ])
       .where('entry.user_id = :userId', { userId })
       .orderBy('entry.createdAt', 'DESC')
       .skip((query.page - 1) * query.limit)

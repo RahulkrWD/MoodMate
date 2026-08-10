@@ -14,11 +14,21 @@ export class UsersService {
     return this.usersRepository.findOne({ where: { email } });
   }
 
+  // Excludes passwordHash - every caller of findById only needs profile
+  // fields. Login goes through findByEmail instead, which does need it
+  // for the bcrypt comparison.
   findById(id: string): Promise<User | null> {
-    return this.usersRepository.findOne({ where: { id } });
+    return this.usersRepository.findOne({
+      where: { id },
+      select: ['id', 'name', 'email', 'avatarUrl', 'isVerified', 'createdAt'],
+    });
   }
 
-  create(data: { name: string; email: string; passwordHash: string }): Promise<User> {
+  create(data: {
+    name: string;
+    email: string;
+    passwordHash: string;
+  }): Promise<User> {
     const user = this.usersRepository.create(data);
     return this.usersRepository.save(user);
   }
