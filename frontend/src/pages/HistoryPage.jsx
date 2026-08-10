@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { CalendarCheck, TrendingUp, Sparkles } from "lucide-react";
+import { CalendarCheck, TrendingUp, Sparkles, PanelLeft } from "lucide-react";
 import { getHistory, getStats, deleteHistoryEntry } from "../api/mood";
 import { moodLabel } from "../lib/moodOptions";
 import { StatCard } from "../components/history/StatCard";
 import { MoodFrequencyBars } from "../components/history/MoodFrequencyBars";
-import { HistoryEntryCard } from "../components/history/HistoryEntryCard";
-import { Pagination } from "../components/ui/Pagination";
+import { HistorySidebar } from "../components/history/HistorySidebar";
+import { HistoryDetailPanel } from "../components/history/HistoryDetailPanel";
 import { Spinner } from "../components/ui/Spinner";
 
-const PAGE_SIZE = 4;
+const PAGE_SIZE = 20;
 
 function thisWeekCount(weeklyTrend) {
   if (!weeklyTrend?.length) return 0;
@@ -26,14 +26,18 @@ export function HistoryPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [stats, setStats] = useState({ totalCheckIns: 0, topMood: null, frequency: {} });
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
-    Promise.all([getHistory({ page, limit: PAGE_SIZE }), getStats()])
+    Promise.all([getHistory({ page: 1, limit: PAGE_SIZE }), getStats()])
       .then(([history, statsData]) => {
         if (cancelled) return;
         setEntries(history.items);
+        setPage(1);
         setTotalPages(history.totalPages);
         setStats(statsData);
       })
@@ -42,11 +46,27 @@ export function HistoryPage() {
     return () => {
       cancelled = true;
     };
-  }, [page]);
+  }, []);
+
+  async function handleLoadMore() {
+    setLoadingMore(true);
+    try {
+      const nextPage = page + 1;
+      const history = await getHistory({ page: nextPage, limit: PAGE_SIZE });
+      setEntries((prev) => [...prev, ...history.items]);
+      setPage(nextPage);
+      setTotalPages(history.totalPages);
+    } catch (err) {
+      toast.error(err.message);
+    } finally {
+      setLoadingMore(false);
+    }
+  }
 
   async function handleDelete(id) {
     const previous = entries;
     setEntries((prev) => prev.filter((e) => e.id !== id));
+    if (selectedId === id) setSelectedId(null);
     try {
       await deleteHistoryEntry(id);
     } catch (err) {
@@ -54,6 +74,8 @@ export function HistoryPage() {
       toast.error(err.message);
     }
   }
+
+  const selectedEntry = entries.find((e) => e.id === selectedId) ?? null;
 
   if (loading) {
     return (
@@ -64,47 +86,69 @@ export function HistoryPage() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6">
-      <div className="mb-8">
-        <h1 className="font-display text-2xl font-semibold text-slate-900 sm:text-3xl">
-          Your history
-        </h1>
-        <p className="mt-1 text-sm text-slate-500">
-          A look back at your check-ins and what helped.
-        </p>
-      </div>
-
-      <div className="mb-8 grid gap-4 sm:grid-cols-3">
-        <StatCard icon={CalendarCheck} label="Total check-ins" value={stats.totalCheckIns} />
-        <StatCard
-          icon={TrendingUp}
-          label="Most frequent mood"
-          value={stats.topMood ? moodLabel(stats.topMood.mood) : "—"}
-          sub={stats.topMood ? `${stats.topMood.count} times` : undefined}
-        />
-        <StatCard icon={Sparkles} label="This week" value={thisWeekCount(stats.weeklyTrend)} />
-      </div>
-
-      <div className="mb-8">
-        <MoodFrequencyBars frequency={stats.frequency} />
-      </div>
-
-      {entries.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-brand-200 py-16 text-center">
-          <p className="text-sm text-slate-500">No check-ins yet. Go check your mood!</p>
+    <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
+      <div className="mb-6 flex items-center justify-between gap-3">
+        <div>
+          <h1 className="font-display text-2xl font-semibold text-slate-900 sm:text-3xl">
+            Your history
+          </h1>
+          <p className="mt-1 text-sm text-slate-500">
+            A look back at your check-ins and what helped.
+          </p>
         </div>
-      ) : (
-        <>
-          <div className="flex flex-col gap-4">
-            {entries.map((entry) => (
-              <HistoryEntryCard key={entry.id} entry={entry} onDelete={handleDelete} />
-            ))}
-          </div>
-          <div className="mt-8">
-            <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
-          </div>
-        </>
-      )}
+        <button
+          type="button"
+          onClick={() => setMobileSidebarOpen(true)}
+          className="flex items-center gap-1.5 rounded-full border border-brand-200 px-3 py-2 text-xs font-medium text-brand-700 md:hidden"
+        >
+          <PanelLeft className="size-4" /> Check-ins
+        </button>
+      </div>
+
+      <div className="flex gap-6">
+        <HistorySidebar
+          entries={entries}
+          selectedId={selectedId}
+          onSelect={setSelectedId}
+          onDelete={handleDelete}
+          loading={loadingMore}
+          hasMore={page < totalPages}
+          onLoadMore={handleLoadMore}
+          mobileOpen={mobileSidebarOpen}
+          onCloseMobile={() => setMobileSidebarOpen(false)}
+        />
+
+        <div className="min-w-0 flex-1">
+          {selectedEntry ? (
+            <HistoryDetailPanel entry={selectedEntry} onDelete={handleDelete} />
+          ) : entries.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-brand-200 py-16 text-center">
+              <p className="text-sm text-slate-500">No check-ins yet. Go check your mood!</p>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-6">
+              <div className="grid gap-4 sm:grid-cols-3">
+                <StatCard icon={CalendarCheck} label="Total check-ins" value={stats.totalCheckIns} />
+                <StatCard
+                  icon={TrendingUp}
+                  label="Most frequent mood"
+                  value={stats.topMood ? moodLabel(stats.topMood.mood) : "—"}
+                  sub={stats.topMood ? `${stats.topMood.count} times` : undefined}
+                />
+                <StatCard
+                  icon={Sparkles}
+                  label="This week"
+                  value={thisWeekCount(stats.weeklyTrend)}
+                />
+              </div>
+              <MoodFrequencyBars frequency={stats.frequency} />
+              <p className="text-center text-sm text-slate-400">
+                Pick a check-in from the list to see what it suggested.
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
