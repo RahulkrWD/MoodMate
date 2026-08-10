@@ -14,10 +14,11 @@ import { useAuthStore } from "../store/authStore";
 import { OptionTile } from "../components/mood/OptionTile";
 import { WizardProgress } from "../components/mood/WizardProgress";
 import { ResultCard } from "../components/mood/ResultCard";
+import { ResultCardSkeleton } from "../components/mood/ResultCardSkeleton";
 import { SeriousMoodNotice } from "../components/mood/SeriousMoodNotice";
 import { Button } from "../components/ui/Button";
 import { Select } from "../components/ui/Select";
-import { Spinner } from "../components/ui/Spinner";
+import { Skeleton } from "../components/ui/Skeleton";
 
 const STEPS = ["Mood", "Energy", "Preferences"];
 
@@ -88,11 +89,18 @@ export function MoodWizardPage() {
 
   if (phase === "loading") {
     return (
-      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 px-4 text-center">
-        <Spinner size={40} />
-        <p className="text-sm font-medium text-slate-500">
-          Thinking about what might help...
-        </p>
+      <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
+        <div className="mb-10 text-center">
+          <Skeleton className="mx-auto mb-4 size-12 rounded-full" />
+          <p className="text-sm font-medium text-slate-500">
+            Thinking about what might help...
+          </p>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-3">
+          <ResultCardSkeleton />
+          <ResultCardSkeleton />
+          <ResultCardSkeleton />
+        </div>
       </div>
     );
   }

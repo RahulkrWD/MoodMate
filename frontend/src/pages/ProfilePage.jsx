@@ -11,6 +11,7 @@ import { Badge } from "../components/ui/Badge";
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
 import { Spinner } from "../components/ui/Spinner";
+import { ProfileSkeleton } from "../components/profile/ProfileSkeleton";
 
 export function ProfilePage() {
   const { user, refreshProfile, updateUser } = useAuthStore();
@@ -80,11 +81,7 @@ export function ProfilePage() {
   }
 
   if (loadingProfile) {
-    return (
-      <div className="flex min-h-[50vh] items-center justify-center">
-        <Spinner size={32} />
-      </div>
-    );
+    return <ProfileSkeleton />;
   }
 
   return (
